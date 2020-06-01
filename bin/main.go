@@ -35,7 +35,8 @@ func main() {
 
 	// Route Handlers for endpoints
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "~/bin/index.html")
+		println("called")
+		http.ServeFile(w, r, "./bin/index.html")
 	})
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/car/{id}", getCar).Methods("GET")

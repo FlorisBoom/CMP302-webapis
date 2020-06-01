@@ -34,7 +34,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// Route Handlers for endpoints
-	r.Handle("/", http.FileServer(http.Dir("./index.html")))
+	r.Handle("/", http.FileServer(http.Dir("/bin/index.html")))
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/car/{id}", getCar).Methods("GET")
 	r.HandleFunc("/cars", createCar).Methods("POST")

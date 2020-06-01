@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
+	// "google.golang.org/api/option"
 	"os"
 )
 

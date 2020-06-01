@@ -34,11 +34,13 @@ func main() {
 	r := mux.NewRouter()
 
 	// Route Handlers for endpoints
-	r.Handle("/", http.FileServer(http.Dir("/bin/")))
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "/bin/index.html")
+	})
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/car/{id}", getCar).Methods("GET")
 	r.HandleFunc("/cars", createCar).Methods("POST")
-	r.HandleFunc("/cars/{id}", updateCar).Methods("PUT")
+	r.HandleFunc("/cars/{id}", updateCar).Methods("PUT")	
 	r.HandleFunc("/cars/{id}", deleteCar).Methods("DELETE")
 
 	// Auth Request for token

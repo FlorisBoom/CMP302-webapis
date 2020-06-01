@@ -44,7 +44,7 @@ func main() {
 	r.HandleFunc("/authorize", getAuthorization).Methods("GET")
 
 
-	port := getPort()
+	// port := getPort()
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 

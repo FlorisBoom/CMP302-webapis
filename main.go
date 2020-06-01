@@ -45,7 +45,7 @@ func main() {
 
 
 	port := getPort()
-	log.Fatal(http.ListenAndServe(port, r))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 func getCars(w http.ResponseWriter, r *http.Request) {

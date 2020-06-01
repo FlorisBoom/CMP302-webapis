@@ -9,6 +9,7 @@ import (
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"os"
 )
 
 // Car Struct
@@ -42,7 +43,9 @@ func main() {
 	// Auth Request for token
 	r.HandleFunc("/authorize", getAuthorization).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8081", r))
+
+	port := getPort()
+	log.Fatal(http.ListenAndServe(port, r))
 }
 
 func getCars(w http.ResponseWriter, r *http.Request) {
@@ -265,4 +268,12 @@ func verifyToken(token string) bool {
 	}
 	log.Printf("Verified token: %v\n", token)
 	return true
+}
+
+func getPort() string {
+	p := os.Getenv("PORT")
+	if p != "" {
+	  return ":" + p
+	}
+	return ":8000"
 }

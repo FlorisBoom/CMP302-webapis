@@ -15,7 +15,7 @@ import (
 type Car struct {
 	Brand	string `firestore:"Brand,omitempty"`
 	Model	string `firestore:"Model,omitempty"`
-	Year	int64    `firestore:"Year,omitempty"`
+	Year	int64  `firestore:"Year,omitempty"`
 	Color	string `firestore:"Color,omitempty"`
 }
 

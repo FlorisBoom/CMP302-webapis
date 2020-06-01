@@ -45,8 +45,8 @@ func main() {
 	r.HandleFunc("/authorize", getAuthorization).Methods("GET")
 
 
-	// port := getPort()
-	log.Fatal(http.ListenAndServe(":8080", r))
+	port := getPort()
+	log.Fatal(http.ListenAndServe(port, r))
 }
 
 func getCars(w http.ResponseWriter, r *http.Request) {

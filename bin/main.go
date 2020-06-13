@@ -243,15 +243,15 @@ func uploadToken(token string) {
 	}
 }
 
-func deleteToken(token String) bool {
+func deleteToken(token String) {
 	if token == "" {
-		return false
+		return 
 	} 
 
 	client, err := app.Firestore(context.Background())
 	if err != nil {
 		log.Fatalln(err)                                  
-		return false
+		return 
 	}
 
 	_, err = client.Collection("tokens").Where("token", "==", token).Delete(context.Background())
@@ -259,7 +259,7 @@ func deleteToken(token String) bool {
 			log.Printf("An error has occurred: %s", err)
 	}
 	log.Printf("Token deleted")
-	return true
+	return 
 }
 
 func verifyToken(token string) bool {

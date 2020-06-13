@@ -38,9 +38,9 @@ func main() {
 	// Route Handlers for endpoints
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/car/{id}", getCar).Methods("GET")
-	r.HandleFunc("/cars", createCar).Methods("POST")
-	r.HandleFunc("/cars/{id}", updateCar).Methods("PUT")
-	r.HandleFunc("/cars/{id}", deleteCar).Methods("DELETE")
+	r.HandleFunc("/car", createCar).Methods("POST")
+	r.HandleFunc("/car/{id}", updateCar).Methods("PUT")
+	r.HandleFunc("/car/{id}", deleteCar).Methods("DELETE")
 
 	// Auth Request for token
 	r.HandleFunc("/authorize", getAuthorization).Methods("GET")

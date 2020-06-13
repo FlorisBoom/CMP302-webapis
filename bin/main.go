@@ -288,6 +288,10 @@ func verifyToken(token string) bool {
 		}
 		log.Println(doc.Data())
 	}
+	if iter != nil {
+		log.Fatal("An error has occurred")
+		return false
+	}
 	log.Printf("Verified token: %v\n", token)
 	return true
 }

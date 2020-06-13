@@ -261,6 +261,8 @@ func uploadToken(token string) {
 	})
 	if err != nil {
 		log.Fatalf("An error has occurred: %s", err)
+	} else {
+		log.Fatalf("Token uploaded")
 	}
 }
 

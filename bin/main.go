@@ -22,7 +22,7 @@ type Car struct {
 	Color string `firestore:"Color,omitempty"`
 }
 
-var opt = option.WithCredentialsFile("/bin/firebase-key.json")
+var opt = option.WithCredentialsFile("./bin/firebase-key.json")
 var app, err = firebase.NewApp(context.Background(), nil, opt)
 
 func main() {

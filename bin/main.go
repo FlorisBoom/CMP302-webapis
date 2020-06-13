@@ -222,7 +222,7 @@ func getAuthorization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uploadToken(token)
-	time.AfterFunc(3600, func() {
+	time.AfterFunc(3600*time.Second, func() {
 		client, err := app.Firestore(context.Background())
 		if err != nil {
 			log.Fatalln(err)
@@ -277,9 +277,12 @@ func verifyToken(token string) bool {
 		return false
 	}
 
+	var i = 0
+
 	iter := client.Collection("tokens").Where("token", "==", token).Documents(context.Background())
 	for {
 		doc, err := iter.Next()
+		i++
 		if err == iterator.Done {
 			break
 		}
@@ -287,14 +290,15 @@ func verifyToken(token string) bool {
 			log.Fatalf("An error has occurred: %s", err)
 			return false
 		}
-		log.Println(doc.Data())
+		log.Println(doc.Data()["token"])
 	}
-	if iter == nil {
-		log.Fatal("An error has occurred")
+	if i == 1 {
+		log.Println("No Matches")
 		return false
+	} else {
+		log.Printf("Verified token: %v\n", token)
+		return true
 	}
-	log.Printf("Verified token: %v\n", token)
-	return true
 }
 
 func getPort() string {

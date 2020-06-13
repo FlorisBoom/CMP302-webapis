@@ -255,7 +255,6 @@ func uploadToken(token string) {
 		log.Fatalln(err)
 		return
 	}
-
 	_, _, err = client.Collection("tokens").Add(context.Background(), map[string]interface{}{
 		"token": token,
 	})

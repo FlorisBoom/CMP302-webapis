@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
+	"time"
 	"encoding/json"
 	"golang.org/x/net/context"
 	"net/http"
 	"github.com/gorilla/mux"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
-	// "google.golang.org/api/option"
 	"os"
 )
 
@@ -222,6 +222,7 @@ func getAuthorization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uploadToken(token)
+	time.AfterFunc(3600, deleteToken(token))
 	log.Printf("Got custom token: %v\n", token)
 	json.NewEncoder(w).Encode(token)
 
@@ -242,8 +243,26 @@ func uploadToken(token string) {
 	}
 }
 
+func deleteToken(token String) bool {
+	if token == "" {
+		return false
+	} 
+
+	client, err := app.Firestore(context.Background())
+	if err != nil {
+		log.Fatalln(err)                                  
+		return false
+	}
+
+	_, err = client.Collection("tokens").Where("token", "==", token).Delete(context.Background())
+	if err != nil {
+			log.Printf("An error has occurred: %s", err)
+	}
+	log.Printf("Token deleted")
+	return true
+}
+
 func verifyToken(token string) bool {
-	println(token)
 	if token == "" {
 		return false
 	} 

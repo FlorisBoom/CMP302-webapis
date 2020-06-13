@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // Car Struct
@@ -21,8 +22,8 @@ type Car struct {
 	Color string `firestore:"Color,omitempty"`
 }
 
-// var opt = option.WithCredentialsFile("./firebase-key.json")
-var app, err = firebase.NewApp(context.Background(), nil)
+var opt = option.WithCredentialsFile("./firebase-key.json")
+var app, err = firebase.NewApp(context.Background(), nil, opt)
 
 func main() {
 	// Init firebase

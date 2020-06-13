@@ -288,7 +288,7 @@ func verifyToken(token string) bool {
 		}
 		log.Println(doc.Data())
 	}
-	if iter != nil {
+	if iter == nil {
 		log.Fatal("An error has occurred")
 		return false
 	}

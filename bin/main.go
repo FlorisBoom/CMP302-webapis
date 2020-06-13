@@ -286,7 +286,7 @@ func verifyToken(token string) bool {
 			log.Fatalf("An error has occurred: %s", err)
 			return false
 		}
-		println(doc.Data())
+		log.Println(doc.Data())
 	}
 	log.Printf("Verified token: %v\n", token)
 	return true

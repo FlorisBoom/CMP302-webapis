@@ -1,23 +1,24 @@
 package main
 
 import (
-	"log"
-	"time"
 	"encoding/json"
-	"golang.org/x/net/context"
+	"log"
 	"net/http"
-	"github.com/gorilla/mux"
-	firebase "firebase.google.com/go"
-	"google.golang.org/api/iterator"
 	"os"
+	"time"
+
+	firebase "firebase.google.com/go"
+	"github.com/gorilla/mux"
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 // Car Struct
 type Car struct {
-	Brand	string `firestore:"Brand,omitempty"`
-	Model	string `firestore:"Model,omitempty"`
-	Year	int64  `firestore:"Year,omitempty"`
-	Color	string `firestore:"Color,omitempty"`
+	Brand string `firestore:"Brand,omitempty"`
+	Model string `firestore:"Model,omitempty"`
+	Year  int64  `firestore:"Year,omitempty"`
+	Color string `firestore:"Color,omitempty"`
 }
 
 // var opt = option.WithCredentialsFile("./firebase-key.json")
@@ -37,12 +38,11 @@ func main() {
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/car/{id}", getCar).Methods("GET")
 	r.HandleFunc("/cars", createCar).Methods("POST")
-	r.HandleFunc("/cars/{id}", updateCar).Methods("PUT")	
+	r.HandleFunc("/cars/{id}", updateCar).Methods("PUT")
 	r.HandleFunc("/cars/{id}", deleteCar).Methods("DELETE")
 
 	// Auth Request for token
 	r.HandleFunc("/authorize", getAuthorization).Methods("GET")
-
 
 	port := getPort()
 	log.Fatal(http.ListenAndServe(port, r))
@@ -56,10 +56,10 @@ func getCars(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("401"))
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
-	cars := make(map[string] Car)
+	cars := make(map[string]Car)
 
 	client, err := app.Firestore(context.Background())
 	if err != nil {
@@ -77,7 +77,7 @@ func getCars(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		car := Car {
+		car := Car{
 			Brand: doc.Data()["Brand"].(string),
 			Model: doc.Data()["Model"].(string),
 			Year:  doc.Data()["Year"].(int64),
@@ -135,7 +135,7 @@ func createCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Close()
-	 
+
 	var car Car
 	_ = json.NewDecoder(r.Body).Decode(&car)
 
@@ -167,12 +167,12 @@ func updateCar(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	var car Car 
+	var car Car
 	_ = json.NewDecoder(r.Body).Decode(&car)
 
 	_, err = client.Collection("cars").Doc(params["id"]).Set(context.Background(), car)
 	if err != nil {
-			log.Printf("An error has occurred: %s", err)
+		log.Printf("An error has occurred: %s", err)
 	}
 
 	json.NewEncoder(w).Encode(car)
@@ -186,24 +186,24 @@ func deleteCar(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("401"))
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
 	client, err := app.Firestore(context.Background())
 	if err != nil {
-		log.Fatalln(err)                                  
+		log.Fatalln(err)
 		return
 	}
 	defer client.Close()
-	 
+
 	params := mux.Vars(r)
 
-	var car Car 
+	var car Car
 	_ = json.NewDecoder(r.Body).Decode(&car)
 
 	_, err = client.Collection("cars").Doc(params["id"]).Delete(context.Background())
 	if err != nil {
-			log.Printf("An error has occurred: %s", err)
+		log.Printf("An error has occurred: %s", err)
 	}
 }
 
@@ -212,26 +212,47 @@ func getAuthorization(w http.ResponseWriter, r *http.Request) {
 
 	client, err := app.Auth(context.Background())
 	if err != nil {
-			log.Fatalf("error getting Auth client: %v\n", err)
+		log.Fatalf("error getting Auth client: %v\n", err)
 	}
-	 
 
 	token, err := client.CustomToken(context.Background(), "some-uid")
 	if err != nil {
-			log.Fatalf("error minting custom token: %v\n", err)
+		log.Fatalf("error minting custom token: %v\n", err)
 	}
 
 	uploadToken(token)
-	time.AfterFunc(3600, deleteToken(token))
+	time.AfterFunc(3600, func() {
+		client, err := app.Firestore(context.Background())
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+		defer client.Close()
+
+		deleteQuery := client.Collection("tokens").Where("token", "==", token)
+		iter := deleteQuery.Documents(context.Background())
+		for {
+			doc, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				log.Fatalln(err)
+			}
+			_, err = client.Collection("tokens").Doc(doc.Ref.ID).Delete(context.Background())
+			if err != nil {
+				log.Printf("An error has occurred: %s", err)
+			}
+		}
+	})
 	log.Printf("Got custom token: %v\n", token)
 	json.NewEncoder(w).Encode(token)
-
 }
 
 func uploadToken(token string) {
 	client, err := app.Firestore(context.Background())
 	if err != nil {
-		log.Fatalln(err)                                  
+		log.Fatalln(err)
 		return
 	}
 
@@ -243,33 +264,14 @@ func uploadToken(token string) {
 	}
 }
 
-func deleteToken(token String) {
-	if token == "" {
-		return 
-	} 
-
-	client, err := app.Firestore(context.Background())
-	if err != nil {
-		log.Fatalln(err)                                  
-		return 
-	}
-
-	_, err = client.Collection("tokens").Where("token", "==", token).Delete(context.Background())
-	if err != nil {
-			log.Printf("An error has occurred: %s", err)
-	}
-	log.Printf("Token deleted")
-	return 
-}
-
 func verifyToken(token string) bool {
 	if token == "" {
 		return false
-	} 
+	}
 
 	client, err := app.Firestore(context.Background())
 	if err != nil {
-		log.Fatalln(err)                                  
+		log.Fatalln(err)
 		return false
 	}
 
@@ -292,7 +294,7 @@ func verifyToken(token string) bool {
 func getPort() string {
 	p := os.Getenv("PORT")
 	if p != "" {
-	  return ":" + p
+		return ":" + p
 	}
 	return ":8000"
 }

@@ -14,7 +14,6 @@ import (
 	"google.golang.org/api/option"
 )
 
-// Car Struct
 type Car struct {
 	Brand string `firestore:"Brand,omitempty"`
 	Model string `firestore:"Model,omitempty"`
